@@ -1,22 +1,22 @@
 #include "Common.h"
 
-char* SERVERIP = (char*)"54.180.140.47";
-#define SERVERPORT 58361
+char* SERVERIP = (char*)"127.0.0.1";
+#define SERVERPORT 2500
 #define BUFSIZE    1024
 
 int main(int argc, char* argv[])
 {
     int retval;
 
-    // ¸í·ÉÇà ÀÎ¼ö°¡ ÀÖÀ¸¸é IP ÁÖ¼Ò·Î »ç¿ë
+    // ëª…ë ¹í–‰ ì¸ìˆ˜ê°€ ìˆìœ¼ë©´ IP ì£¼ì†Œë¡œ ì‚¬ìš©
     if (argc > 1) SERVERIP = argv[1];
 
-    // À©¼Ó ÃÊ±âÈ­
+    // ìœˆì† ì´ˆê¸°í™”
     WSADATA wsa;
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
         return 1;
 
-    // ¼ÒÄÏ »ı¼º
+    // ì†Œì¼“ ìƒì„±
     SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == INVALID_SOCKET) err_quit("socket()");
 
@@ -29,39 +29,39 @@ int main(int argc, char* argv[])
     retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
     if (retval == SOCKET_ERROR) err_quit("connect()");
 
-    // µ¥ÀÌÅÍ Åë½Å¿¡ »ç¿ëÇÒ º¯¼ö
+    // ë°ì´í„° í†µì‹ ì— ì‚¬ìš©í•  ë³€ìˆ˜
     char buf[BUFSIZE + 1];
     int len;
 
 
 
 
-    // ¼­¹ö¿Í µ¥ÀÌÅÍ Åë½Å
+    // ì„œë²„ì™€ ë°ì´í„° í†µì‹ 
     while (1) {
-        // µ¥ÀÌÅÍ ÀÔ·Â
-        printf("\n[º¸³¾ µ¥ÀÌÅÍ] ");
+        // ë°ì´í„° ì…ë ¥
+        printf("\n[ë³´ë‚¼ ë°ì´í„°] ");
         if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
             break;
 
-        // '\n' ¹®ÀÚ Á¦°Å
+        // '\n' ë¬¸ì ì œê±°
         len = (int)strlen(buf);
         if (buf[len - 1] == '\n')
             buf[len - 1] = '\0';
         if (strlen(buf) == 0)
             break;
 
-        // µ¥ÀÌÅÍ º¸³»±â on off
+        // ë°ì´í„° ë³´ë‚´ê¸° on off
         retval = send(sock, buf, (int)strlen(buf), 0);
         if (retval == SOCKET_ERROR) {
             err_display("send()");
             break;
         }
-        printf("[TCP Å¬¶óÀÌ¾ğÆ®] %d¹ÙÀÌÆ®¸¦ º¸³Â½À´Ï´Ù.\n", retval);
+        printf("[TCP í´ë¼ì´ì–¸íŠ¸] %dë°”ì´íŠ¸ë¥¼ ë³´ëƒˆìŠµë‹ˆë‹¤.\n", retval);
 
 
 
 
-        // µ¥ÀÌÅÍ ¹Ş±â
+        // ë°ì´í„° ë°›ê¸°
         retval = recv(sock, buf, BUFSIZE, 0);
         if (retval == SOCKET_ERROR) {
             err_display("recv()");
@@ -70,16 +70,16 @@ int main(int argc, char* argv[])
         else if (retval == 0)
             break;
 
-        // ¹ŞÀº µ¥ÀÌÅÍ Ãâ·Â
+        // ë°›ì€ ë°ì´í„° ì¶œë ¥
         buf[retval] = '\0';
-        printf("[TCP Å¬¶óÀÌ¾ğÆ®] %d¹ÙÀÌÆ®¸¦ ¹Ş¾Ò½À´Ï´Ù.\n", retval);
-        printf("[¹ŞÀº µ¥ÀÌÅÍ] %s\n", buf);
+        printf("[TCP í´ë¼ì´ì–¸íŠ¸] %dë°”ì´íŠ¸ë¥¼ ë°›ì•˜ìŠµë‹ˆë‹¤.\n", retval);
+        printf("[ë°›ì€ ë°ì´í„°] %s\n", buf);
     }
 
-    // ¼ÒÄÏ ´İ±â
+    // ì†Œì¼“ ë‹«ê¸°
     closesocket(sock);
 
-    // À©¼Ó Á¾·á
+    // ìœˆì† ì¢…ë£Œ
     WSACleanup();
     return 0;
 }
